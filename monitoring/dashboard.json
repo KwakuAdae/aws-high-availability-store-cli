@@ -1,0 +1,80 @@
+{
+  "start": "-PT3H",
+  "widgets": [
+    {
+      "type": "text", "x": 0, "y": 0, "width": 24, "height": 2,
+      "properties": {
+        "markdown": "## Kwaku Online Store: availability and performance\nLoad balancer **${ALB_NAME}** · Auto Scaling group **${ASG_NAME}** · region ${AWS_REGION}"
+      }
+    },
+    {
+      "type": "metric", "x": 0, "y": 2, "width": 8, "height": 6,
+      "properties": {
+        "title": "Healthy / unhealthy servers",
+        "region": "${AWS_REGION}", "view": "timeSeries", "stat": "Minimum", "period": 60,
+        "metrics": [
+          ["AWS/ApplicationELB", "HealthyHostCount", "TargetGroup", "${TG_DIM}", "LoadBalancer", "${ALB_DIM}", {"label": "Healthy", "color": "#2ca02c"}],
+          [".", "UnHealthyHostCount", ".", ".", ".", ".", {"label": "Unhealthy", "color": "#d62728", "stat": "Maximum"}]
+        ],
+        "yAxis": {"left": {"min": 0}}
+      }
+    },
+    {
+      "type": "metric", "x": 8, "y": 2, "width": 8, "height": 6,
+      "properties": {
+        "title": "Requests per minute",
+        "region": "${AWS_REGION}", "view": "timeSeries", "stat": "Sum", "period": 60,
+        "metrics": [
+          ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", "${ALB_DIM}", {"label": "Requests"}]
+        ]
+      }
+    },
+    {
+      "type": "metric", "x": 16, "y": 2, "width": 8, "height": 6,
+      "properties": {
+        "title": "Response time (seconds)",
+        "region": "${AWS_REGION}", "view": "timeSeries", "period": 60,
+        "metrics": [
+          ["AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", "${ALB_DIM}", {"stat": "Average", "label": "Average"}],
+          ["...", {"stat": "p95", "label": "p95"}]
+        ]
+      }
+    },
+    {
+      "type": "metric", "x": 0, "y": 8, "width": 8, "height": 6,
+      "properties": {
+        "title": "Server capacity (Auto Scaling)",
+        "region": "${AWS_REGION}", "view": "timeSeries", "stat": "Average", "period": 60,
+        "metrics": [
+          ["AWS/AutoScaling", "GroupDesiredCapacity", "AutoScalingGroupName", "${ASG_NAME}", {"label": "Desired"}],
+          [".", "GroupInServiceInstances", ".", ".", {"label": "In service"}],
+          [".", "GroupMaxSize", ".", ".", {"label": "Max"}]
+        ],
+        "yAxis": {"left": {"min": 0}}
+      }
+    },
+    {
+      "type": "metric", "x": 8, "y": 8, "width": 8, "height": 6,
+      "properties": {
+        "title": "Average CPU % (scaling target 60%)",
+        "region": "${AWS_REGION}", "view": "timeSeries", "stat": "Average", "period": 60,
+        "metrics": [
+          ["AWS/EC2", "CPUUtilization", "AutoScalingGroupName", "${ASG_NAME}", {"label": "CPU"}]
+        ],
+        "annotations": {"horizontal": [{"label": "Target", "value": 60}]},
+        "yAxis": {"left": {"min": 0, "max": 100}}
+      }
+    },
+    {
+      "type": "metric", "x": 16, "y": 8, "width": 8, "height": 6,
+      "properties": {
+        "title": "Errors (5xx)",
+        "region": "${AWS_REGION}", "view": "timeSeries", "stat": "Sum", "period": 60,
+        "metrics": [
+          ["AWS/ApplicationELB", "HTTPCode_ELB_5XX_Count", "LoadBalancer", "${ALB_DIM}", {"label": "From load balancer (e.g. no healthy servers)"}],
+          [".", "HTTPCode_Target_5XX_Count", ".", ".", {"label": "From servers"}]
+        ]
+      }
+    }
+  ]
+}

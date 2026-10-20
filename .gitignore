@@ -1,0 +1,5 @@
+.DS_Store
+*.log
+# created by the scripts (IDs of the AWS resources you created)
+.lab-env
+.lab-env.tmp
